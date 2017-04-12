@@ -3,18 +3,24 @@
 >OkHttp现在已经得到Google官方认可，大量的app都采用OkHttp做网络请求。
 
 ##Gradle引入
->compile compile 'com.squareup.okhttp3:okhttp:3.6.0'
->compile 'com.github.franmontiel:PersistentCookieJar:v0.9.3'
+
+compile compile 'com.squareup.okhttp3:okhttp:3.6.0'
+
+compile 'com.github.franmontiel:PersistentCookieJar:v0.9.3'
+
 ##Jar
->Download [the latest okhttp JAR][1]
+
+Download [the latest okhttp JAR][1]
 
 ##上传单文件的php代码
->Download [php file of php][2]
+
+Download [php file of php][2]
 
 Maven:
 
 ###GitHub（square）
->https://github.com/square/okhttp
+
+https://github.com/square/okhttp
 
 >本文所有前后端联调数据都是基于PHP的本地后台数据
 
