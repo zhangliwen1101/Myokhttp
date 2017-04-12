@@ -189,7 +189,7 @@ print_r(json_encode($files));
 
 php：
 将文件传到服务，再返给本地
-
+Download [php file of php][2]
 本地会接收到图片的name，size等信息
 
 ```
@@ -267,3 +267,4 @@ php：
 
 
 [1]:https://repo1.maven.org/maven2/com/squareup/okhttp/okhttp/2.7.5/okhttp-2.7.5.jar
+[2]:https://github.com/zhangliwen1101/okhttp/blob/master/php文件上传代码/fileupload.php
