@@ -7,6 +7,9 @@ compile compile 'com.squareup.okhttp3:okhttp:3.6.0'
     compile 'com.github.franmontiel:PersistentCookieJar:v0.9.3'
 ##Jar
 Download [the latest okhttp JAR][1]
+##上传单文件的php代码
+Download [php file of php][2]
+
 Maven:
 
 ###GitHub（square）
@@ -189,7 +192,7 @@ print_r(json_encode($files));
 
 php：
 将文件传到服务，再返给本地
-Download [php file of php][2]
+
 本地会接收到图片的name，size等信息
 
 ```
