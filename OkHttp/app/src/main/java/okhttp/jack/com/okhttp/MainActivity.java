@@ -1,24 +1,53 @@
-# OkHttp
+package okhttp.jack.com.okhttp;
 
->OkHttp现在已经得到Google官方认可，大量的app都采用OkHttp做网络请求。
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
-##Gradle引入
-compile compile 'com.squareup.okhttp3:okhttp:3.6.0'
-    compile 'com.github.franmontiel:PersistentCookieJar:v0.9.3'
-##Jar
-Download [the latest okhttp JAR][1]
-Maven:
+import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.BitmapCallback;
+import com.zhy.http.okhttp.callback.FileCallBack;
+import com.zhy.http.okhttp.callback.GenericsCallback;
+import com.zhy.http.okhttp.callback.StringCallback;
 
-###GitHub（square）
-https://github.com/square/okhttp
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
->本文所有前后端联调数据都是基于PHP的本地后台数据
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
->本文用到一个第三方库是鸿洋大神封装的类库
+public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
+    private TextView mTv;
+    private ImageView imageView;
+    private Bean bean;
+    private OkHttpClient mOkHttpClient;
+    private ProgressBar mProgressBar;
 
-##Code
-```
-   //get传集合
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        mTv = (TextView) findViewById(R.id.text);
+        imageView = (ImageView) findViewById(R.id.imageView);
+        mProgressBar = (ProgressBar) findViewById(R.id.id_progress);
+        mProgressBar.setMax(100);
+        downloadFile(mTv);
+    }
+
+    //get传集合
     public void getHtmlMap(View view) {
         String url = "";
         url = "http://127.0.0.1/mytest.php";
@@ -35,11 +64,6 @@ https://github.com/square/okhttp
                 .execute(new MyStringCallback());
     }
 
-php-code:
-$data = $_REQUEST;
-print_r(json_encode($data));
-```
-```
     //get传参
     public void getHtmlData(View view) {
         String url = "";
@@ -52,14 +76,9 @@ print_r(json_encode($data));
                 .id(100)
                 .build()
                 .execute(new MyStringCallback());
-php-code:
-$name = $_REQUEST['name'];
-$age = $_REQUEST['age'];
-$arr = array('name'=>$name,'age'=>$age,'sex'=>'男');
-print_r(json_encode($arr));
-```
-```
-//post传参
+    }
+
+    //post传参
     public void getUser(View view) {
         String url = "http://127.0.0.1/mytest.php";
         OkHttpUtils
@@ -76,21 +95,13 @@ print_r(json_encode($arr));
 
                     @Override
                     public void onResponse(User response, int id) {
-                        mTv.setText("onResponse:" + response.username+"   "+response.password);
+                        mTv.setText("onResponse:" + response.username + "   " + response.password);
                     }
                 });
     }
 
-php-code:
-$username = $_REQUEST['username'];
-$password = $_REQUEST['password'];
-$arr = array('username'=>$username,'password'=>$password);
-print_r(json_encode($arr));
-```
-```
-//post传集合
-    public void getUsers(View view)
-    {
+    //post传集合
+    public void getUsers(View view) {
         Map<String, String> params = new HashMap<String, String>();
         params.put("name", "张力文");
         params.put("pwd", "123456");
@@ -102,18 +113,9 @@ print_r(json_encode($arr));
                 .build()
                 .execute(new MyStringCallback());
     }
-php-code:
-// $username = $_REQUEST['name'];
-// $password = $_REQUEST['pwd'];
-// $arr = array('username'=>$username,'password'=>$password);
-// print_r(json_encode($arr));
-$params = $_REQUEST;
-print_r(json_encode($params));
-```
-```
-//https
-    public void getHttpsHtml(View view)
-    {
+
+    //https
+    public void getHttpsHtml(View view) {
         String url = "https://kyfw.12306.cn/otn/";
         OkHttpUtils
                 .get()
@@ -122,11 +124,9 @@ print_r(json_encode($params));
                 .build()
                 .execute(new MyStringCallback());
     }
-```
-```
- //请求图片得到bitmap
-    public void getImage(View view)
-    {
+
+    //请求图片得到bitmap
+    public void getImage(View view) {
         mTv.setText("");
         String url = "http://images.csdn.net/20150817/1.jpg";
         OkHttpUtils
@@ -137,30 +137,24 @@ print_r(json_encode($params));
                 .connTimeOut(20000)
                 .readTimeOut(20000)
                 .writeTimeOut(20000)
-                .execute(new BitmapCallback()
-                {
+                .execute(new BitmapCallback() {
                     @Override
-                    public void onError(Call call, Exception e, int id)
-                    {
+                    public void onError(Call call, Exception e, int id) {
                         mTv.setText("onError:" + e.getMessage());
                     }
 
                     @Override
-                    public void onResponse(Bitmap bitmap, int id)
-                    {
+                    public void onResponse(Bitmap bitmap, int id) {
                         Log.e("TAG", "onResponse：complete");
                         imageView.setImageBitmap(bitmap);
                     }
                 });
     }
-```
-```
-//上传图片
-    public void uploadFile(View view)
-    {
+
+    //上传图片
+    public void uploadFile(View view) {
         File file = new File(Environment.getExternalStorageDirectory(), "messenger_01.jpg");
-        if (!file.exists())
-        {
+        if (!file.exists()) {
             Toast.makeText(MainActivity.this, "文件不存在，请修改文件路径", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -172,10 +166,10 @@ print_r(json_encode($params));
         headers.put("APP-Key", "APP-Secret222");
         headers.put("APP-Secret", "APP-Secret111");
 
-         String url = "http://127.0.0.1/fileupload.php";
+        String url = "http://127.0.0.1/fileupload.php";
 
-        OkHttpUtils.post()//
-                .addFile("mFile", "messenger_01.jpg", file)//
+        OkHttpUtils.post()
+                .addFile("mFile", "messenger_01.jpg", file)
                 .url(url)
                 .params(params)
                 .headers(headers)
@@ -183,18 +177,7 @@ print_r(json_encode($params));
                 .execute(new MyStringCallback());
     }
 
-php-code:
-$files = $_FILES['mFile'];
-print_r(json_encode($files));
-
-php：
-将文件传到服务，再返给本地
-
-本地会接收到图片的name，size等信息
-
-```
-```
-//多文件上传
+    //多文件上传,现在后台的fileupload.php文件只支持单文件上传
     public void multiFileUpload(View view) {
         File file = new File(Environment.getExternalStorageDirectory(), "messenger_01.jpg");
         File file2 = new File(Environment.getExternalStorageDirectory(), "test1.txt");
@@ -212,16 +195,14 @@ php：
 
         String url = "http://127.0.0.1/fileupload.php";
         OkHttpUtils.post()//
-                .addFile("mFile", "messenger_01.jpg", file)//
-                .addFile("mFile", "test1.txt", file2)//
+                .addFile("mFile", "messenger_01.jpg", file)
+                .addFile("mFile", "test1.txt", file2)
                 .url(url)
-                .params(params)//
-                .build()//
+                .params(params)
+                .build()
                 .execute(new MyStringCallback());
     }
-```
-```
-//文件下载
+    //文件下载
     public void downloadFile(View view)
     {
         String url = "http://127.0.0.1/upload/messenger_01.jpg";
@@ -257,13 +238,69 @@ php：
                     }
                 });
     }
-```
+    public void postString(View view) {
+        String url = "http://127.0.0.1/mytest.php";
+        OkHttpUtils
+                .postString()
+                .url(url)
+                .mediaType(MediaType.parse("application/json; charset=utf-8"))
+                .content(new Gson().toJson(new User("zhangliwen", "123456")))
+                .build()
+                .execute(new MyStringCallback());
+    }
 
 
+    public class MyStringCallback extends StringCallback {
+        @Override
+        public void onBefore(Request request, int id) {
+            setTitle("loading...");
+        }
+
+        @Override
+        public void onAfter(int id) {
+            setTitle("Sample-okHttp");
+        }
+
+        @Override
+        public void onError(Call call, Exception e, int id) {
+            e.printStackTrace();
+            mTv.setText("onError:" + e.getMessage());
+        }
+
+        @Override
+        public void onResponse(String response, int id) {
+            Log.e(TAG, "onResponse：complete");
+            mTv.setText("onResponse:" + response);
+            System.out.println("sdasdsadas:" + response);
+            //Glide
+            Glide.with(MainActivity.this)
+                    .load(response)
+                    .into(imageView);
 
 
+            //使用Gson解析
+            //            Gson gson = new Gson();
+            //            bean = gson.fromJson(response,
+            //                    new TypeToken<Bean>() {
+            //                    }.getType());
+            //            mTv.setText(bean.getName() + "   " + bean.getAge() + "   " + bean.getSex());
 
+            switch (id) {
+                case 100:
+                    Toast.makeText(MainActivity.this, "http", Toast.LENGTH_SHORT).show();
+                    break;
+                case 101:
+                    Toast.makeText(MainActivity.this, "https", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
 
+        @Override
+        public void inProgress(float progress, long total, int id) {
+            Log.e(TAG, "inProgress:" + progress);
+            mProgressBar.setProgress((int) (100 * progress));
+        }
 
+    }
 
-[1]:https://repo1.maven.org/maven2/com/squareup/okhttp/okhttp/2.7.5/okhttp-2.7.5.jar
+}
